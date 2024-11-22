@@ -4,7 +4,7 @@ function App() {
 
   return (
     <>
-      <h1>WorkSpace</h1>
+      <h1>Login Interface</h1>
     </>
   )
 }
