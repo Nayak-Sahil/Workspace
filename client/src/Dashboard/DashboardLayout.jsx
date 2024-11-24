@@ -2,9 +2,6 @@ import React from "react";
 import { NavLink, Link, Outlet, useLocation } from "react-router-dom";
 import {
   ChevronRight,
-  CircleDashed,
-  CircleDot,
-  CircleStop,
   Menu,
   UserRound,
 } from "lucide-react";
@@ -19,14 +16,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "@/utility/Logo";
-// import sidebarImage from "../assets/Add files-rafiki.svg"
-import sidebarImage from "../assets/Duplicate-amico.svg";
-// import sidebarImage from "../assets/Personal files-bro.svg"
+import workspace from "../assets/workspace.svg";
+import collaboration from "../assets/collaboration.svg";
+import dashboard from "../assets/dashboard.svg"
 import { generalList, workspaceList } from "./sidebarList";
 
 export default function DashboardLayout() {
   const currentRoute = useLocation();
-
+  console.log(currentRoute);
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
       <div className="hidden shadow-lg bg-muted/40 md:block">
@@ -41,7 +38,7 @@ export default function DashboardLayout() {
               <Sidebar />
             </nav>
             <img
-              src={sidebarImage}
+              src={currentRoute.pathname.endsWith("workspace") ? workspace : currentRoute.pathname.endsWith("access-control") ? collaboration : dashboard}
               className="mx-auto mb-5"
               alt="Workspace Environment"
               width={200}
@@ -102,7 +99,7 @@ export default function DashboardLayout() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="h-screen flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-4 overflow-y-scroll">
+        <main className="h-screen flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-4 sm:overflow-y-hidden overflow-y-scroll">
           <Outlet />
         </main>
       </div>
@@ -137,7 +134,7 @@ const Sidebar = () => {
         return <DashboardNav key={index} listData={list} />;
       })}
       <hr className="my-2" />
-      <p className="mb-2 mt-5">Your Workspace</p>
+      <p className="mb-2 mt-5">Manage</p>
       {workspaceList.map((list, index) => {
         return <DashboardNav key={index} listData={list} />;
       })}

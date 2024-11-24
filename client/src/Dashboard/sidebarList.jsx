@@ -15,7 +15,7 @@ const generalList = [
 
 const workspaceList = [
   {
-    title: "Manage",
+    title: "Your workspace",
     icon: <Container className="h-4 w-4" />,
     link: "/dashboard/workspace",
   },
