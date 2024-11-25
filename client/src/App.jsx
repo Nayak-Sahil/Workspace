@@ -48,10 +48,10 @@ function App() {
   return (
     <div className="w-full lg:grid h-screen lg:grid-cols-2">
       <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[360px] gap-6">
+        <div className="mx-auto grid sm:w-[360px] w-[320px] gap-6">
           <div className="grid gap-2">
             <h1 className="text-3xl text-primary font-bold">Login</h1>
-            <p className="text-balance font-medium text-muted-foreground">
+            <p className="font-medium text-muted-foreground">
               Access your workspace to manage it effortlessly.
             </p>
           </div>
@@ -92,7 +92,7 @@ function App() {
       </div>
       <div className="hidden relative bg-muted lg:block overflow-hidden">
         <div className="w-max absolute shadow-md -right-[50%] top-[50%] -translate-y-[50%]">
-          {/* <img src="/Dashboard.png" width={950} alt="Dashboard" /> */}
+          <img src="/LoginModel.png" width={950} alt="Dashboard" />
         </div>
       </div>
     </div>
