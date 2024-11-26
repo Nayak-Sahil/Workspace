@@ -26,11 +26,26 @@ export default function LastActivity() {
       <CardContent className="h-[300px] border-rose-400 overflow-y-scroll p-5 pt-0">
         <Table>
           <TableBody>
-            <TransactionList date="2024-sep-20" />
-            <TransactionList date="2024-sep-20" />
-            <TransactionList date="2024-sep-20" />
-            <TransactionList date="2024-sep-20" />
-            <TransactionList date="2024-sep-20" />
+            <TransactionList
+              user="admin@example.com"
+              message="Admin changed the role of user@example.com to Editor"
+              date="2024-Nov-20"
+            />
+            <TransactionList
+              user="user2@example.com"
+              message="Updated the workspace settings"
+              date="2024-Aug-04"
+            />
+            <TransactionList
+              user="admin@example.com"
+              message="Removed user user3@example.com from the workspace"
+              date="2024-Sept-5"
+            />
+            <TransactionList
+              user="user@example.com"
+              message="Created a new project titled 'Team Collaboration'"
+              date="2024-May-15"
+            />
           </TableBody>
         </Table>
       </CardContent>
@@ -38,23 +53,21 @@ export default function LastActivity() {
   );
 }
 
-const TransactionList = ({ user, text, date }) => {
+const TransactionList = ({ user, message, date }) => {
   return (
     <TableRow className="cursor-pointer">
       <TableCell className="px-0">
         <div className="font-medium w-[250px] truncate flex flex-col">
-          <p className="text-card-foreground font-normal">
-            Just accepted the notification
-          </p>
+          <p className="text-card-foreground font-normal">{message}</p>
           <div className="flex items-center justify-between text-xs">
-            <p className="flex items-center text-primary">
-              by user@example.com
-            </p>
+            <p className="flex items-center text-primary">by {user}</p>
             <p className="md:hidden block">({date})</p>
           </div>
         </div>
       </TableCell>
-      <TableCell className="hidden md:table-cell text-right px-0">{date}</TableCell>
+      <TableCell className="hidden md:table-cell text-right px-0">
+        {date}
+      </TableCell>
     </TableRow>
   );
 };

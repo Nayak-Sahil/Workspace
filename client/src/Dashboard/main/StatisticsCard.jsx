@@ -10,7 +10,9 @@ export default function StatisticsCard({
   index,
   link,
   image,
-  linkTitle
+  linkTitle,
+  authorizedUsers,
+  activeUsers,
 }) {
   return (
     <Card x-chunk={`dashboard-01-chunk-${index}`}>
@@ -19,7 +21,7 @@ export default function StatisticsCard({
       </CardHeader>
       <CardContent className="relative">
         <div className="text-2xl font-bold text-gray-600 flex items-center gap-x-2">
-          {statistics} {icon}
+          {index == 0 ? authorizedUsers : activeUsers} {icon}
         </div>
         <Link
           to={link}

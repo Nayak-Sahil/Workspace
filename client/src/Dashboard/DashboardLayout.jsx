@@ -20,10 +20,17 @@ import workspace from "../assets/workspace.svg";
 import collaboration from "../assets/collaboration.svg";
 import dashboard from "../assets/dashboard.svg"
 import { generalList, workspaceList } from "./sidebarList";
+import ValidateCookie from "@/utility/ValidateCookie";
+import { useSelector } from "react-redux";
+import { useCookies } from "react-cookie";
 
 export default function DashboardLayout() {
+  ValidateCookie(true, "/");  
+
   const currentRoute = useLocation();
-  console.log(currentRoute);
+  const [token, setToken, removeToken] = useCookies(["WS_TOKEN"]);
+  const profile = useSelector((state) => state.Profile['0'].email);
+  
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
       <div className="hidden shadow-lg bg-muted/40 md:block">
@@ -93,9 +100,9 @@ export default function DashboardLayout() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>user@domain.com</DropdownMenuLabel>
+              <DropdownMenuLabel>{profile}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={()=>{removeToken("WS_TOKEN")}}>Logout</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

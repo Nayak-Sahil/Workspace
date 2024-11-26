@@ -6,8 +6,12 @@ import {
 } from "@/components/ui/card";
 import { CircleCheck, CircleUser, ContactRound } from "lucide-react";
 import React from "react";
+import { useSelector } from "react-redux";
 
 export default function Profile() {
+  const profile = useSelector((state) => state.Profile['0']);
+  const adminProfile = useSelector((state) => state.AdminProfile);
+
   return (
     <div className="flex flex-col md:gap-y-0 gap-y-4 items-center justify-between">
       <Card className="w-full">
@@ -16,16 +20,16 @@ export default function Profile() {
           <CircleUser className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-3">
-          <ProfileDetails title="Username" value="John Doe" />
+          <ProfileDetails title="Username" value={profile.username} />
           <ProfileDetails
             title="Your Email Address"
             value={
               <p className="flex items-center">
-                user@example.com <CircleCheck className="w-4 h-4 ml-1" />
+                {profile.email} <CircleCheck className="w-4 h-4 ml-1" />
               </p>
             }
           />
-          <ProfileDetails title="Your Role | Status" value="Writer | Active" />
+          <ProfileDetails title="Your Role | Status" value={`${profile.role} | ${profile.status}`} />
         </CardContent>
       </Card>
       <Card className="w-full">
@@ -34,9 +38,13 @@ export default function Profile() {
           <ContactRound className="h-5 w-5 text-muted-foreground" />
         </CardHeader>
         <CardContent className="pt-3">
-          <ProfileDetails title="Username" value="John Doe" />
-          <ProfileDetails title="Request for Role change?" value="Editor" />
-        </CardContent>
+          <ProfileDetails title="Username" value={adminProfile.username} />
+          <ProfileDetails title="Admin Email" value={adminProfile.email} />
+          {
+            profile.role != "Admin" &&
+            <ProfileDetails title="Request to admin for role change?" value={profile.role == "Editor" ? "Viewer" : "Editor"} />
+          }
+          </CardContent>
       </Card>
     </div>
   );
