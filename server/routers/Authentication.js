@@ -17,7 +17,16 @@ AuthRouter.post('/login', [ValidateToken], (req, res) => {
         return;
     } else {
         const token = jwt.sign({ ...user }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        res.cookie('WS_TOKEN', token);
+        try{
+            res.cookie('WS_TOKEN', token, { 
+                httpOnly: true, 
+                secure: true, 
+                sameSite: 'None' 
+              });
+            console.log(req.cookies);
+        }catch(err){
+            console.log(err);
+        }
         res.status(200).json({ ...user });
     }
 });
