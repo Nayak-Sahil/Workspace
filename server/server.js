@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const AuthRouter = require('./routers/Authentication');
 const AuthorizationRouter = require('./routers/Authorization');
+const WorkspaceRouter = require('./routers/Workspace');
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(bodyParser.json());
 // use routers
 app.use(AuthRouter);
 app.use("/user", AuthorizationRouter);
-
+app.use("/workspace", WorkspaceRouter);
 
 // server configuration
 const PORT = process.env.PORT;

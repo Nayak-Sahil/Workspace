@@ -3,7 +3,6 @@ const ValidateRole = require('../middlewares/ValidateRole');
 const ValidateToken = require('../middlewares/ValidateToken');
 const AuthorizationRouter = require('express').Router();
 const db = require('../Database/MockData');
-const data = require('../Database/MockData');
 
 AuthorizationRouter.post('/grant', [ValidateToken, ValidateRole], (req, res) => {
     const {email, role} = req.body;
