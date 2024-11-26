@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -8,8 +9,12 @@ const AuthorizationRouter = require('./routers/Authorization');
 const app = express();
 
 // use uiltities middlewares
-app.use(bodyParser.json());
+app.use(cors({
+    origin: process.env.DEV ? process.env.DEV_FRONT_URL : process.env.PRODUCTION_FRONT_URL,
+    credentials: true, // Allow cookies
+}));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // use routers
 app.use(AuthRouter);
@@ -18,8 +23,8 @@ app.use("/user", AuthorizationRouter);
 
 // server configuration
 const PORT = process.env.PORT;
-app.listen(PORT, (err)=>{
-    if(err){
+app.listen(PORT, (err) => {
+    if (err) {
         console.log("can't able to run server!");
         return;
     }
