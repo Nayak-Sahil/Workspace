@@ -1,20 +1,25 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PasswordInpt from "./Auth/PasswordInpt";
+import Request from "./utility/Request";
+import ValidateCookie from "./utility/ValidateCookie";
+
 
 function App() {
+  const navigator = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formMessage, setFormMessage] = useState({
-    messageType: "DEFAULT",
     color: "text-foreground",
     message: "*All fields are required!",
   });
 
-  function handleLoginForm(e) {
+  ValidateCookie(false, "/dashboard");
+
+  async function handleLoginForm(e) {
     e.preventDefault();
 
     //? Regex: https://support.boldsign.com/kb/article/15962/how-to-create-regular-expressions-regex-for-email-address-validation
@@ -23,25 +28,43 @@ function App() {
     
     if (email == "" || password == "") {
       setFormMessage({
-        messageType: "ERROR",
         color: "text-red-500",
         message: "*All fields are required!"
       });
       return;
     }else if(!emailRegex.test(email)){
       setFormMessage({
-        messageType: "ERROR",
         color: "text-red-500",
         message: "Oops! That email doesn't seem right. Try again?"
       });
       return;
     }else{
       setFormMessage({
-        messageType: "ERROR",
         color: "text-green-500",
         message: "Processing..."
       });
-      console.warn(email, password)
+
+      //? Send the data to the server
+      const response = await Request({body: {email, password}, method: "POST", route: "/login"});
+      if(response.success){
+        setFormMessage({
+          color: "text-green-500",
+          message: "Successfully logged in!"
+        });
+
+        
+        // Redirect to the dashboard
+        navigator("/dashboard");
+      }else{
+        if(response.status === 409){
+          navigator("/dashboard");
+        }else{
+          setFormMessage({
+            color: "text-red-500",
+            message: response.message
+          });
+        }
+      }
     }
   }
 
