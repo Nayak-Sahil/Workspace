@@ -21,7 +21,7 @@ export default function EditorTool() {
     }
   }, [roleMode]);
 
-  return roleMode.mode === "Editor" ? (
+  return (roleMode.mode === "Admin" || roleMode.mode === "Editor") ? (
     <Editor
       onEditorChange={(content, editor) => {
         handleEditorChange(content, editor);
@@ -105,7 +105,7 @@ export default function EditorTool() {
         placeholder: "Type here...",
         height: 500,
         resize: false,
-        // editable_root: roleMode.isEditable,
+        editable_root: roleMode.isEditable,
       }}
     />
   ) : (

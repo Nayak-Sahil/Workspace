@@ -12,16 +12,18 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "@/redux/slices/ModeSlice";
 
 export default function Header() {
   const dispatch = useDispatch();
+  const profile = useSelector((state) => state.Profile["0"]);
+
   function handleModeChange(wantToPreview) {
     if (wantToPreview) {
-        dispatch(setMode("Viewer"));
+      dispatch(setMode("Viewer"));
     } else {
-        dispatch(setMode("Editor"));
+      dispatch(setMode("Editor"));
     }
   }
 
@@ -33,42 +35,49 @@ export default function Header() {
           Space
         </h1>
         <Badge className="text-primary ml-" variant="outline">
-          Editor
+          {profile.role}
         </Badge>
       </div>
 
       <div className="flex items-center justify-between gap-x-5">
-        <ActionButton
-          children={
-            <>
-              <CloudUpload className="w-4 h-4" />
-              Publish
-            </>
-          }
-          variant="default"
-        />
-        <ActionButton
-          children={
-            <Link
-              className="flex items-center gap-x-[6px]"
-              to="/dashboard/access-control"
-            >
-              <UserRoundPlus className="w-4 h-4" />
-              Invite
-            </Link>
-          }
-          variant="outline"
-          style="sm:flex hidden"
-        />
-        <div className="w-full flex items-center space-x-2">
-          <Switch
-            onCheckedChange={(checked) => {
-              handleModeChange(checked);
-            }}
-            id="airplane-mode"
+        {(profile.role === "Admin" || profile.role === "Editor") && (
+            <ActionButton
+              children={
+                <>
+                  <CloudUpload className="w-4 h-4" />
+                  Publish
+                </>
+              }
+              variant="default"
+            />
+          )}
+        {profile.role === "Admin" && (
+          <ActionButton
+            children={
+              <Link
+                className="flex items-center gap-x-[6px]"
+                to="/dashboard/access-control"
+              >
+                <UserRoundPlus className="w-4 h-4" />
+                Invite
+              </Link>
+            }
+            variant="outline"
+            style="sm:flex hidden"
           />
-          <Label htmlFor="airplane-mode">Preview</Label>
-        </div>
+        )}
+
+        {(profile.role === "Editor" || profile.role === "Admin")&& (
+          <div className="w-full flex items-center space-x-2">
+            <Switch
+              onCheckedChange={(checked) => {
+                handleModeChange(checked);
+              }}
+              id="airplane-mode"
+            />
+            <Label htmlFor="airplane-mode">Preview</Label>
+          </div>
+        )}
       </div>
     </div>
   );
