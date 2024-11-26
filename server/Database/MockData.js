@@ -4,7 +4,7 @@ const data = [
         username: 'nayak_sahil',
         email: 'nayaksahild@gmail.com',
         password: 'sahil123',
-        role: 'admin',
+        role: 'Admin',
         status: 'active',
         createdAt: '2021-08-01T00:00:00.000Z',
     },
