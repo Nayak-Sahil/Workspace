@@ -24,9 +24,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import Request from "@/utility/Request";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser } from "@/redux/slices/Collaborate";
 
 export default function AddUserDialog() {
   const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
+  const dispatch = useDispatch();
+  const collaborator = useSelector((state) => state.Collaborate);
+
+  async function handleAddUser(e){
+    e.preventDefault();
+
+    if(email == "" || role == ""){
+      toast.error("All fields are required!");
+      return;
+    }
+
+    const emailRegex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/
+    if(!emailRegex.test(email)){
+      toast.error("Oops! That email doesn't seem right. Try again?");
+      return;
+    }
+
+    //? Send the data to the server
+    const response = await Request({body: {email, role, action: "Admin"}, method: "POST", route: "/user/grant"});
+    console.log(response);
+    if(response.success){
+      dispatch(addUser([...collaborator, response.data.data]));
+      toast.success("Successfully added user!");
+    }else{
+      toast.error("An error occurred. Please try again! (" + response.message + ")");
+    }
+  }
 
   return (
     <Dialog onOpenChange={() => setRole("")}>
@@ -48,7 +80,7 @@ export default function AddUserDialog() {
             <Label className="text-left" htmlFor="userRole">
               Email
             </Label>
-            <Input placeholder="user@example.com" className="col-span-3" />
+            <Input onChange={(e)=>{setEmail(e.target.value)}} placeholder="user@example.com" className="col-span-3" />
           </div>
           <p className="w-full text-xs mb-2 font-medium text-muted-foreground flex">
             Ensure you provide a valid email, as the system will send invitation to the specified address.
@@ -89,7 +121,7 @@ export default function AddUserDialog() {
           </p>
         </div>
         <DialogFooter>
-          <Button className="text-sm sm:mt-0 mt-2 shadow-md" type="submit">
+          <Button onClick={handleAddUser} className="text-sm sm:mt-0 mt-2 shadow-md" type="submit">
             Send Invite
           </Button>
         </DialogFooter>

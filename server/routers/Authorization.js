@@ -3,6 +3,7 @@ const ValidateRole = require('../middlewares/ValidateRole');
 const ValidateToken = require('../middlewares/ValidateToken');
 const AuthorizationRouter = require('express').Router();
 const db = require('../Database/MockData');
+const data = require('../Database/MockData');
 
 AuthorizationRouter.post('/grant', [ValidateToken, ValidateRole], (req, res) => {
     const {email, role} = req.body;
@@ -14,9 +15,9 @@ AuthorizationRouter.post('/grant', [ValidateToken, ValidateRole], (req, res) => 
 
     const user = {
         id: nanoid(5),
-        password: nanoid(10),
         username: email.split('@')[0],
         email,
+        password: nanoid(10),
         role,
         status: 'Invited',
         createdAt: new Date().toLocaleString()
@@ -26,26 +27,26 @@ AuthorizationRouter.post('/grant', [ValidateToken, ValidateRole], (req, res) => 
     db.push(user);
 
     // send mail to the user
-    res.status(200).json({message: 'User has been invited!'});
+    res.status(200).json({data: user, message: 'User has been invited!'});
 });
 
 AuthorizationRouter.post('/revoke', [ValidateToken, ValidateRole], (req, res) => {
-    const {email} = req.body;
-    
-    if(!email){
+    const {userId} = req.body;
+
+    if(!userId){
         res.status(400).json({message: 'Invalid request!'});
         return;
     }
 
-    if(!db.find((user)=> user.email === email)){
+    if(!db.find((user)=> user.id === userId)){
         res.status(404).json({message: 'User not found!'});
         return;
     }
 
     // Revoke the role
     db.forEach((user)=>{
-        if(user.email === email){
-            user.role = "Delete";
+        if(user.id === userId){
+            user.role = "Deleted";
             user.status = 'Revoked';
         }
     })
@@ -54,31 +55,40 @@ AuthorizationRouter.post('/revoke', [ValidateToken, ValidateRole], (req, res) =>
 });
 
 AuthorizationRouter.put('/change', [ValidateToken, ValidateRole], (req, res) => {
-    const {email, role} = req.body;
+    const {userId, role} = req.body;
     
-    if(!email || !role){
+    if(!userId || !role){
         res.status(400).json({message: 'Invalid request!'});
         return;
     }
 
-    if(!db.find((user)=> user.email === email)){
+    const user = db.find((user)=> user.id === userId);
+    if(!user){
         res.status(404).json({message: 'User not found!'});
         return;
     }
 
     // Revoke the role
     db.forEach((user)=>{
-        if(user.email === email){
+        if(user.id === userId){
             user.role = role;
             user.status = 'Grant';
         }
     })
 
-    res.status(200).json({message: `User Role has been changed!`});
+    res.status(200).json({message: `User Role has been changed!`, data: user});
 });
 
-AuthorizationRouter.get('/get', (req, res) => {
-    res.json(db);
+AuthorizationRouter.get('/get-all', [ValidateToken, ValidateRole], (req, res) => {
+    //! Deep copy of the database
+    let collaborator = JSON.parse(JSON.stringify(db));
+    collaborator = collaborator.map((user)=> {
+        delete user.password
+        return user;
+    });
+
+    collaborator = collaborator.filter((user)=> user.role !== 'Deleted');
+    res.json(collaborator);
 });
 
 module.exports = AuthorizationRouter;

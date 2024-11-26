@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Diamond,
+  FileUser,
   Mail,
   MoreHorizontal,
   Settings2,
@@ -37,8 +38,13 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ConfirmDialog from "./ConfirmDialog";
 import { Toaster } from "@/components/ui/sonner";
+import { useSelector } from "react-redux";
 
 export default function Authorization() {
+  const profile = useSelector((state) => state.Profile["0"]);
+  const collaborate = useSelector((state) => state.Collaborate);
+  const adminProfile = useSelector((state) => state.AdminProfile);
+
   return (
     <main className="flex flex-col h-full gap-4 p-2 lg:gap-6">
       <Card
@@ -54,7 +60,7 @@ export default function Authorization() {
               Manage your member and their account permission here.
             </CardDescription>
           </div>
-          <AddUserDialog />
+          {profile.role === "Admin" && <AddUserDialog />}
         </CardHeader>
         <hr className="mb-1" />
         <CardContent className="w-full md:h-[370px] h-max overflow-y-scroll">
@@ -78,14 +84,35 @@ export default function Authorization() {
                     <Diamond className="h-4 w-4 mr-1" /> Status
                   </p>
                 </TableHead>
-                <TableHead className="flex items-center md:px-0">
-                  <Settings2 className="h-4 w-4 mr-1" />
-                  <span className="">Actions</span>
-                </TableHead>
+                {profile.role === "Admin" && (
+                  <TableHead className="flex items-center md:px-0">
+                    <Settings2 className="h-4 w-4 mr-1" />
+                    <span className="">Actions</span>
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
-              <PostList />
+              <PostList
+                    email={adminProfile.email}
+                    username={adminProfile.username}
+                    role={adminProfile.role}
+                    status={adminProfile.status}
+                    showAction={false}
+                  />
+              {collaborate.map((user, idx) => {
+                return (
+                  <PostList
+                    userId={user.id}
+                    key={idx}
+                    email={user.email}
+                    username={user.username}
+                    role={user.role}
+                    status={user.status}
+                    showAction={profile.role === "Admin" ? true : false}
+                  />
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>
@@ -100,97 +127,95 @@ export default function Authorization() {
   );
 }
 
-const PostList = ({
-  title,
-  status,
-  ttlViews,
-  ttlComments,
-  lastUpdate,
-  blogId,
-}) => {
+const PostList = ({ email, username, role, status, showAction, userId }) => {
   return (
     <TableRow className="h-6 w-full">
-      <TableCell className="flex items-center w-[200px] pt-4 sm:px-4 px-0 font-medium truncate">
+      <TableCell className="flex items-center w-[230px] pt-4 sm:px-4 px-0 font-medium truncate">
         <Avatar className="h-8 w-8">
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
         <div className="ml-4">
-          <p>user@gmail.com</p>
-          <p className="block sm:hidden text-xs text-primary">Admin</p>
+          <p>{email}</p>
+          <p className="block sm:hidden text-xs text-primary">{role}</p>
         </div>
       </TableCell>
-      <TableCell className="hidden md:table-cell p-2">User001</TableCell>
-      <TableCell className="hidden md:table-cell p-2">Admin</TableCell>
+      <TableCell className="hidden md:table-cell p-2">{username}</TableCell>
+      <TableCell className="hidden md:table-cell p-2">{role}</TableCell>
       <TableCell className="hidden md:table-cell p-2">
-        <Badge variant="outline">Invited</Badge>
+        <Badge variant="outline">{status}</Badge>
       </TableCell>
-      <TableCell className="p-2 sm:px-4 px-0 sm:text-start text-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button aria-haspopup="true" size="icon" variant="ghost">
-              <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel className="text-primary">
-              Switch To
-            </DropdownMenuLabel>
-            {/* <ConfirmDialog
-              toastMessage={"User role updated successfully!"}
-              triggerBtn={
-                <p className="text-card-foreground flex w-full items-center pl-2 font-medium text-sm py-1">
-                  <FileUser className="mr-2 w-4 h-4" /> Viewer
-                </p>
-              }
-              title={"Are you absolutely sure to change role?"}
-              description={
-                "This will change the role of selected user and user can edit, delete workspace file."
-              }
-            /> */}
-            <ConfirmDialog
-              toastMessage={"User role updated successfully!"}
-              triggerBtn={
-                <p className="text-card-foreground flex w-full items-center pl-2 font-medium text-sm py-1">
-                  <UserRoundPen className="mr-2 w-4 h-4" /> Editor
-                </p>
-              }
-              title={"Are you sure you want to proceed?"}
-              description={
-                <p>
-                  Changing this user's role{" "}
-                  <span className="text-primary font-medium">
-                    will grant them permissions to edit and delete workspace
-                    files
-                  </span>
-                  .
-                </p>
-              }
-            />
-            <hr className="my-1" />
-            <ConfirmDialog
-              toastMessage={"User role deleted successfully!"}
-              triggerBtn={
-                <p className="w-full text-red-500 flex items-center pl-2 font-medium text-sm py-1">
-                  <Trash2 className="mr-2 w-4 h-4" /> Remove
-                </p>
-              }
-              title={"Are you sure you want to proceed?"}
-              description={
-                <p>
-                  Deleting this user will{" "}
-                  <span className="text-primary font-medium">
-                    remove their account
-                  </span>
-                  . Actions performed by the user will remain visible but will
-                  be attributed to (deleted user)
-                </p>
-              }
-            />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </TableCell>
+      {showAction ? (
+        <TableCell className="p-2 sm:px-4 px-0 sm:text-start text-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button aria-haspopup="true" size="icon" variant="ghost">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel className="text-primary">
+                Switch To
+              </DropdownMenuLabel>
+              {role == "Editor" ? (
+                <ConfirmDialog
+                  actionData={{ userId: userId, action: "Update", toRole: "Viewer" }}
+                  toastMessage={"User role updated successfully!"}
+                  triggerBtn={
+                    <p className="text-card-foreground flex w-full items-center pl-2 font-medium text-sm py-1">
+                      <FileUser className="mr-2 w-4 h-4" /> Viewer
+                    </p>
+                  }
+                  title={"Are you absolutely sure to change role?"}
+                  description={
+                    <p>
+                      Changing this user's role will grant them permissions to <span className="text-primary font-medium"> just only view the workspace files </span>.
+                    </p>
+                  }
+                />
+              ) : (
+                <ConfirmDialog
+                actionData={{ userId: userId, action: "Update", toRole: "Editor" }}
+                  toastMessage={"User role updated successfully!"}
+                  triggerBtn={
+                    <p className="text-card-foreground flex w-full items-center pl-2 font-medium text-sm py-1">
+                      <UserRoundPen className="mr-2 w-4 h-4" /> Editor
+                    </p>
+                  }
+                  title={"Are you sure you want to proceed?"}
+                  description={
+                    <p>
+                      Changing this user's role <span className="text-primary font-medium"> will grant them permissions to edit and delete workspace files </span>.
+                    </p>
+                  }
+                />
+              )}
+              <hr className="my-1" />
+              <ConfirmDialog
+              actionData={{ userId: userId, action: "Delete"}}
+                toastMessage={"User role deleted successfully!"}
+                triggerBtn={
+                  <p className="w-full text-red-500 flex items-center pl-2 font-medium text-sm py-1">
+                    <Trash2 className="mr-2 w-4 h-4" /> Remove
+                  </p>
+                }
+                title={"Are you sure you want to proceed?"}
+                description={
+                  <p>
+                    Deleting this user will{" "}
+                    <span className="text-primary font-medium">
+                      remove their account
+                    </span>
+                    . Actions performed by the user will remain visible but will
+                    be attributed to (deleted user)
+                  </p>
+                }
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </TableCell>
+      ): ""}
     </TableRow>
   );
 };

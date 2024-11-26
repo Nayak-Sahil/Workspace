@@ -3,7 +3,11 @@ const validActions = ["Edit", "Read", "Admin"];
 
 function ValidateRole(req, res, next){
     // Get the requested action
-    const {action} = req.body;
+    let {action} = req.body;
+
+    if(req.method === "GET" && req.originalUrl == "/user/get-all"){
+        action = "Read";
+    }
     
     if(!action || action === '' || !validActions.includes(action)){
         res.status(400).json({message: 'Invalid action!'});
@@ -13,7 +17,7 @@ function ValidateRole(req, res, next){
     //? Check if the user is authorized to perform the requested action
     //? There can be 3 role: {Admin, Editor, Viewer}
     const user = req.decodedToken;
-    console.log(user);
+
     const ViewerInvalidAction = validActions.filter((action) => action != "Read");
     if(user.role === "Editor" && action === "Admin" || user.role === "Viewer" && ViewerInvalidAction.includes(action)){
         res.status(401).json({message: 'Unauthorized!'});

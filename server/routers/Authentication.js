@@ -11,19 +11,23 @@ AuthRouter.post('/login', [ValidateToken], (req, res) => {
     }
 
     //? Check if the email and password are correct
-    const user = data.filter((user) => user.email === email && user.password === password);
+    const user = JSON.parse(JSON.stringify(data.filter((user) => user.email === email && user.password === password)));
+     
+    //! Remove the password 'key' from the user object
+    delete user[0].password;
+
     if (user.length === 0) {
         res.status(401).json({ message: 'Invalid login credentials!' });
         return;
     } else {
         const token = jwt.sign({ ...user }, process.env.JWT_SECRET, { expiresIn: '1d' });
         try{
-            res.cookie('WS_TOKEN', token, { 
-                httpOnly: true, 
-                secure: true, 
-                sameSite: 'None' 
-              });
-            console.log(req.cookies);
+            res.cookie('WS_TOKEN', token);
+            // { 
+            //     httpOnly: true, 
+            //     secure: true, 
+            //     sameSite: 'None' 
+            // }
         }catch(err){
             console.log(err);
         }
