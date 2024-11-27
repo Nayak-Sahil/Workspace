@@ -1,10 +1,6 @@
 import React from "react";
 import { NavLink, Link, Outlet, useLocation } from "react-router-dom";
-import {
-  ChevronRight,
-  Menu,
-  UserRound,
-} from "lucide-react";
+import { ChevronRight, Menu, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,19 +14,23 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "@/utility/Logo";
 import workspace from "../assets/workspace.svg";
 import collaboration from "../assets/collaboration.svg";
-import dashboard from "../assets/dashboard.svg"
+import dashboard from "../assets/dashboard.svg";
 import { generalList, workspaceList } from "./sidebarList";
 import ValidateCookie from "@/utility/ValidateCookie";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCookies } from "react-cookie";
 
 export default function DashboardLayout() {
-  ValidateCookie(true, "/");  
+  ValidateCookie(true, "/");
 
   const currentRoute = useLocation();
   const [token, setToken, removeToken] = useCookies(["WS_TOKEN"]);
-  const profile = useSelector((state) => state.Profile['0'].email);
-  
+  const profile = useSelector((state) => state.Profile["0"].email);
+
+  function handleLogOut() {
+    removeToken("WS_TOKEN");
+  }
+
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
       <div className="hidden shadow-lg bg-muted/40 md:block">
@@ -45,7 +45,13 @@ export default function DashboardLayout() {
               <Sidebar />
             </nav>
             <img
-              src={currentRoute.pathname.endsWith("workspace") ? workspace : currentRoute.pathname.endsWith("access-control") ? collaboration : dashboard}
+              src={
+                currentRoute.pathname.endsWith("workspace")
+                  ? workspace
+                  : currentRoute.pathname.endsWith("access-control")
+                  ? collaboration
+                  : dashboard
+              }
               className="mx-auto mb-5"
               alt="Workspace Environment"
               width={200}
@@ -86,7 +92,9 @@ export default function DashboardLayout() {
                 .filter((e) => {
                   return e != "";
                 })
-                .join(" / ").split("-").join(" ")}
+                .join(" / ")
+                .split("-")
+                .join(" ")}
             </p>
             <p className="font-medium capitalize flex items-center text-primary text-sm mr-1">
               {/* <CircleStop className="w-4 h-4 mr-1" /> Active */}
@@ -102,7 +110,9 @@ export default function DashboardLayout() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>{profile}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={()=>{removeToken("WS_TOKEN")}}>Logout</DropdownMenuItem>
+              <button className="w-full font-medium text-sm text-red-500 pb-1" onClick={handleLogOut}>
+                Logout
+              </button>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
