@@ -11,7 +11,7 @@ const app = express();
 
 // use uiltities middlewares
 app.use(cors({
-    origin: [process.env.DEV ? process.env.DEV_FRONT_URL : process.env.PRODUCTION_FRONT_URL],
+    origin: [process.env.DEV == "true" ? process.env.DEV_FRONT_URL : process.env.PRODUCTION_FRONT_URL],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true, // Allow cookies
