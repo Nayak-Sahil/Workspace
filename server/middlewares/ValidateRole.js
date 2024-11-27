@@ -5,7 +5,7 @@ function ValidateRole(req, res, next){
     // Get the requested action
     let {action} = req.body;
 
-    if(req.method === "GET" && req.originalUrl == "/user/get-all"){
+    if(req.method === "GET" && (req.originalUrl == "/user/get-all" || req.originalUrl == "/workspace/get")){
         action = "Read";
     }
     
