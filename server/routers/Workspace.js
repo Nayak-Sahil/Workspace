@@ -13,4 +13,8 @@ WorkspaceRouter.post("/set", [ValidateToken, ValidateRole], (req, res) => {
     res.status(200).send({ message: "Workspace setted!" });
 });
 
+WorkspaceRouter.get("/get", [ValidateToken, ValidateRole], (req, res) => {
+    res.status(200).send({ data: EditorData });
+});
+
 module.exports = WorkspaceRouter;
