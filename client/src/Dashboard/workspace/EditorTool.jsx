@@ -1,16 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "@/components/ui/badge";
+import { saveWorkspace } from "@/redux/slices/Workspace";
+import Request from "@/utility/Request";
 
 export default function EditorTool() {
   const roleMode = useSelector((state) => state.Mode);
-  const [content, setContent] = useState("");
+  const content = useSelector((state) => state.Workspace);
+
+  const dispatch = useDispatch();
 
   const previewFrame = useRef();
 
   function handleEditorChange(content, editor) {
-    setContent(content);
+    const htmlCotent = editor.getContent();
+    dispatch(saveWorkspace(htmlCotent))
   }
 
   useEffect(() => {
@@ -20,6 +25,23 @@ export default function EditorTool() {
       previewFrame.current.contentWindow.document.close();
     }
   }, [roleMode]);
+
+  useEffect(() => {
+    getWorkspaceData();
+  }, []);
+
+  async function getWorkspaceData() {
+    const response = await Request({
+      route: "/workspace/get",
+      method: "GET",
+    });
+    
+    if (response.success) {
+      dispatch(saveWorkspace(response.data.data));
+    } else {
+      console.error("Workspace not found!");
+    }
+  }
 
   return (roleMode.mode === "Admin" || roleMode.mode === "Editor") ? (
     <Editor

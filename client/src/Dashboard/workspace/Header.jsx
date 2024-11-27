@@ -14,16 +14,32 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode } from "@/redux/slices/ModeSlice";
+import Request from "@/utility/Request";
+import { saveWorkspace } from "@/redux/slices/Workspace";
 
 export default function Header() {
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.Profile["0"]);
+  const workspaceData = useSelector((state) => state.Workspace);
 
   function handleModeChange(wantToPreview) {
     if (wantToPreview) {
       dispatch(setMode("Viewer"));
     } else {
       dispatch(setMode("Editor"));
+    }
+  }
+
+  async function handleSaveWorkspace() {
+    // Save workspace
+    const response = await Request({route: "/workspace/set", method: "POST", body: {data: workspaceData, action: "Edit"}});
+
+    console.warn(response);
+
+    if(response.success) {
+      dispatch(saveWorkspace(response.data.data));
+    }else {
+      console.error("Workspace not saved!");
     }
   }
 
@@ -43,10 +59,10 @@ export default function Header() {
         {(profile.role === "Admin" || profile.role === "Editor") && (
             <ActionButton
               children={
-                <>
-                  <CloudUpload className="w-4 h-4" />
-                  Publish
-                </>
+                <button className="flex items-center" onClick={handleSaveWorkspace}>
+                  <CloudUpload className="w-4 h-4 mr-1" />
+                  Save
+                </button>
               }
               variant="default"
             />
