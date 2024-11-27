@@ -6,8 +6,11 @@ async function Request({ route, method, body }) {
     message: null,
   };
 
+  const url = import.meta.env.VITE_DEV === "true" ? import.meta.env.VITE_LOCAL_URL : import.meta.env.VITE_HOST_URL;
+  console.log(url, import.meta.env.VITE_DEV);
+
   try {
-    const reqResult = await fetch(import.meta.env.VITE_LOCAL_URL + route, {
+    const reqResult = await fetch(url + route, {
       method: method,
       body: JSON.stringify(body),
       headers: {
