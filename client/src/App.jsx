@@ -57,6 +57,7 @@ function App() {
         navigator("/dashboard");
       }else{
         if(response.status === 409){
+          console.log(response);
           navigator("/dashboard");
         }else{
           setFormMessage({
