@@ -12,7 +12,7 @@ AuthRouter.post('/login', [ValidateToken], (req, res) => {
 
     //? Check if the email and password are correct
     const user = JSON.parse(JSON.stringify(data.filter((user) => user.email === email && user.password === password)));
-     
+
     //! Remove the password 'key' from the user object
     delete user[0].password;
 
@@ -21,9 +21,9 @@ AuthRouter.post('/login', [ValidateToken], (req, res) => {
         return;
     } else {
         const token = jwt.sign({ ...user }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        try{
-            res.cookie('WS_TOKEN', token, {sameSite: 'None', secure: true, httpOnly: false, path: '/', maxAge: 86400000});
-        }catch(err){
+        try {
+            res.cookie('WS_TOKEN', token, { sameSite: 'None', secure: true, httpOnly: false, path: '/', maxAge: 86400000 });
+        } catch (err) {
             console.log(err);
         }
         res.status(200).json({ ...user });
